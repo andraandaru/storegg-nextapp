@@ -1,8 +1,31 @@
-import Image from "next/image"
+import { useCallback, useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { HistoryTransactionsTypes, TopUpCategoriesTypes } from "../../../services/data-types"
+import { getDashboard } from "../../../services/member"
 import Categori from "./Categori"
 import TableRow from "./TableRow"
 
 const OverviewContent = () => {
+  const [data, setData] = useState({
+    data: [],
+    count: [],
+  })
+
+  const fetchData = useCallback(async () => {
+    const res = await getDashboard()
+    if (res.error) {
+      toast.error(res.message)
+    } else {
+      setData(res.data)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const IMG = process.env.NEXT_PUBLIC_IMG
+
   return (
     <>
       <main className="main-wrapper">
@@ -12,24 +35,13 @@ const OverviewContent = () => {
             <p className="text-lg fw-medium color-palette-1 mb-14">Top Up Categories</p>
             <div className="main-content">
               <div className="row">
-                <div className="col-lg-4 ps-15 pe-15 pb-lg-0 pb-4">
-                  <Categori icon="desktop" nominal={18000500}>
-                    Game
-                    <br /> Desktop
-                  </Categori>
-                </div>
-                <div className="col-lg-4 ps-15 pe-15 pb-lg-0 pb-4">
-                  <Categori icon="game-mobile" nominal={8455000}>
-                    Game
-                    <br /> Mobile
-                  </Categori>
-                </div>
-                <div className="col-lg-4 ps-15 pe-15 pb-lg-0 pb-4">
-                  <Categori icon="other-categories" nominal={5000000}>
-                    Other
-                    <br /> Categories
-                  </Categori>
-                </div>
+                {data.count.map((item: TopUpCategoriesTypes) => {
+                  return (
+                    <Categori key={item._id} icon="desktop" nominal={item.value}>
+                      {item.name}
+                    </Categori>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -48,38 +60,19 @@ const OverviewContent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <TableRow
-                    image="overview-1"
-                    title="Mobile Legends: The New Battle 2021"
-                    category="Desktop"
-                    item={200}
-                    price={290000}
-                    status="Pending"
-                  />
-                  <TableRow
-                    image="overview-2"
-                    title="Call of Duty:Modern"
-                    category="Desktop"
-                    item={550}
-                    price={740000}
-                    status="Success"
-                  />
-                  <TableRow
-                    image="overview-3"
-                    title="Clash of Clans"
-                    category="Mobile"
-                    item={100}
-                    price={120000}
-                    status="Failed"
-                  />
-                  <TableRow
-                    image="overview-4"
-                    title="The Royal Game"
-                    category="Mobile"
-                    item={225}
-                    price={200000}
-                    status="Pending"
-                  />
+                  {data.data.map((item: HistoryTransactionsTypes) => {
+                    return (
+                      <TableRow
+                        key={item._id}
+                        image={`${IMG}/${item.historyVoucherTopup.thumbnail}`}
+                        title={item.historyVoucherTopup.gameName}
+                        category={item.category.name}
+                        item={`${item.historyVoucherTopup.coinQuantity} ${item.historyVoucherTopup.coinName}`}
+                        price={item.value}
+                        status={item.status}
+                      />
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

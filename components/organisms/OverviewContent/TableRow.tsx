@@ -1,28 +1,29 @@
 import Image from "next/image"
 import cx from "classnames"
+import NumberFormat from "react-number-format"
 
 interface TableRowProps {
   image: string
   title: string
   category: string
-  item: number
+  item: string
   price: number
-  status: "Success" | "Failed" | "Pending"
+  status: string
 }
 
 const TableRow = ({ image, title, category, item, price, status }: TableRowProps) => {
   const classStatus = cx({
     "float-start icon-status": true,
-    pending: status === "Pending",
-    success: status === "Success",
-    failed: status === "Failed",
+    pending: status === "pending",
+    success: status === "success",
+    failed: status === "failed",
   })
   return (
     <>
       <tr className="align-middle">
         <th scope="row">
           <div className="float-start me-3 mb-lg-0 mb-3">
-            <Image src={`/img/${image}.png`} width={80} height={60} alt="" />
+            <Image src={image} width={80} height={60} alt="" />
           </div>
           <div className="game-title-header">
             <p className="game-title fw-medium text-start color-palette-1 m-0">{title}</p>
@@ -30,10 +31,18 @@ const TableRow = ({ image, title, category, item, price, status }: TableRowProps
           </div>
         </th>
         <td>
-          <p className="fw-medium color-palette-1 m-0">{item} Gold</p>
+          <p className="fw-medium color-palette-1 m-0">{item}</p>
         </td>
         <td>
-          <p className="fw-medium text-start color-palette-1 m-0">{price}</p>
+          <p className="fw-medium text-start color-palette-1 m-0">
+            <NumberFormat
+              value={price}
+              prefix="Rp. "
+              displayType="text"
+              thousandSeparator="."
+              decimalSeparator=","
+            />
+          </p>
         </td>
         <td>
           <div>

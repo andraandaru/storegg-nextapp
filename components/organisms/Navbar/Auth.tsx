@@ -1,11 +1,36 @@
 import Link from "next/link"
 import Image from "next/image"
+import { useEffect, useState } from "react"
+import Cookies from "js-cookie"
+import jwtDecode, { JwtPayload } from "jwt-decode"
+import { JWTPayloadTypes, UserTypes } from "../../../services/data-types"
+import { useRouter } from "next/router"
 
-interface AuthProps {
-  isLogin?: boolean
-}
+const Auth = () => {
+  const router = useRouter()
+  const [isLogin, setIsLogin] = useState(false)
+  const [user, setUser] = useState({
+    avatar: "",
+  })
+  useEffect(() => {
+    const token = Cookies.get("token")
+    if (token) {
+      const jwtToken = atob(token)
+      const payload: JWTPayloadTypes = jwtDecode(jwtToken)
+      const user: UserTypes = payload.player
+      const IMG = process.env.NEXT_PUBLIC_IMG
+      user.avatar = `${IMG}/${user.avatar}`
+      setIsLogin(true)
+      setUser(user)
+    }
+  }, [])
 
-const Auth = ({ isLogin }: Partial<AuthProps>) => {
+  const onLogout = () => {
+    Cookies.remove("token")
+    router.push("/")
+    setIsLogin(false)
+  }
+
   if (isLogin) {
     return (
       <li className="nav-item my-auto dropdown d-flex">
@@ -19,13 +44,7 @@ const Auth = ({ isLogin }: Partial<AuthProps>) => {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <Image
-              src="/img/avatar-1.png"
-              className="rounded-circle"
-              width="40"
-              height="40"
-              alt=""
-            />
+            <Image src={user.avatar} className="rounded-circle" width="40" height="40" alt="" />
           </a>
 
           <ul className="dropdown-menu border-0" aria-labelledby="dropdownMenuLink">
@@ -45,11 +64,9 @@ const Auth = ({ isLogin }: Partial<AuthProps>) => {
               </Link>
             </li>
             <li>
-              <Link href="/sign-in">
-                <a className="dropdown-item text-lg color-palette-2" href="#">
-                  Log Out
-                </a>
-              </Link>
+              <a className="dropdown-item text-lg color-palette-2" onClick={onLogout} role="button">
+                Log Out
+              </a>
             </li>
           </ul>
         </div>

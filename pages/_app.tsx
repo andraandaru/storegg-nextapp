@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/no-sync-scripts */
 import "../styles/homepage.css"
 import "../styles/utilities.css"
 import "../styles/detail.css"
@@ -14,9 +16,11 @@ import "../styles/transactions.css"
 import "../styles/transactions-detail.css"
 import "../styles/edit-profile.css"
 import "../styles/navbar-log-in.css"
+import "react-toastify/dist/ReactToastify.css"
 
 import type { AppProps } from "next/app"
 import Head from "next/head"
+import { ToastContainer } from "react-toastify"
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -49,6 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         ></script>
       </Head>
       <Component {...pageProps} />
+      <ToastContainer />
     </>
   )
 }

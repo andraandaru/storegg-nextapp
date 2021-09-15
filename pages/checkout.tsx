@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import CheckoutConfirmation from "../components/organisms/CheckoutConfirmation"
@@ -28,6 +29,21 @@ const Checkout = () => {
       </section>
     </>
   )
+}
+
+export const getServerSideProps = async ({ req }: GetServerSidePropsContext) => {
+  const { token } = req.cookies
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
 }
 
 export default Checkout
